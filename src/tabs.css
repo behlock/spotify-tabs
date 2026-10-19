@@ -1,0 +1,129 @@
+#spotify-tabs {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  flex: 0 0 40px;
+  min-width: 0;
+  padding: 4px 8px;
+  background: #121212;
+  border-bottom: 1px solid #292929;
+  color: #b3b3b3;
+  font:
+    13px -apple-system,
+    BlinkMacSystemFont,
+    sans-serif;
+  box-sizing: border-box;
+  -webkit-app-region: no-drag;
+}
+#spotify-tabs .st-list {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+  overflow: auto;
+  scrollbar-width: thin;
+}
+#spotify-tabs .st-tab {
+  position: relative;
+  user-select: none;
+  touch-action: pan-y;
+  display: flex;
+  align-items: center;
+  flex: 0 1 200px;
+  min-width: 92px;
+  max-width: 220px;
+  border-radius: 6px;
+  background: #1b1b1b;
+  overflow: hidden;
+}
+#spotify-tabs .st-tab[data-active='true'] {
+  background: #333;
+  color: #fff;
+}
+#spotify-tabs button {
+  font: inherit;
+  color: inherit;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  padding: 5px 8px;
+  border-radius: 5px;
+  line-height: 20px;
+}
+#spotify-tabs button:hover {
+  background: #ffffff14;
+  color: #fff;
+}
+#spotify-tabs button:focus-visible {
+  outline: 2px solid #1ed760;
+  outline-offset: -2px;
+}
+#spotify-tabs .st-select {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  text-align: left;
+  flex: 1;
+  min-width: 0;
+}
+#spotify-tabs .st-close {
+  font-size: 17px;
+  flex: none;
+  padding: 3px 7px;
+  margin-right: 2px;
+  line-height: 18px;
+}
+#spotify-tabs .st-plus {
+  position: relative;
+  flex: none;
+  font-size: 24px;
+  width: 30px;
+  padding: 0;
+  line-height: 28px;
+  opacity: 0;
+}
+#spotify-tabs .st-plus:hover,
+#spotify-tabs .st-plus:focus-visible,
+#spotify-tabs .st-tab:nth-last-child(2):hover ~ .st-plus {
+  opacity: 1;
+}
+@media (hover: none) {
+  #spotify-tabs .st-plus {
+    opacity: 1;
+  }
+}
+#spotify-tabs button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+#spotify-tabs ~ .main-view-container {
+  flex: 1 1 0 !important;
+  min-height: 0 !important;
+  height: 0 !important;
+}
+#main-view:has(> #spotify-tabs) [data-testid='topbar'] {
+  top: 40px !important;
+}
+
+#spotify-tabs .st-tab[data-dragging='true'] {
+  opacity: 0.5;
+  cursor: grabbing;
+}
+#spotify-tabs [data-drop]::before {
+  content: '';
+  position: absolute;
+  top: 3px;
+  bottom: 3px;
+  width: 2px;
+  background: #1ed760;
+  pointer-events: none;
+}
+#spotify-tabs [data-drop='before']::before {
+  left: 0;
+}
+
+#main-view[data-st-restoring] .main-view-container {
+  visibility: hidden;
+}

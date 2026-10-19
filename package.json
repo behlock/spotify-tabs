@@ -1,0 +1,25 @@
+{
+  "name": "spotify-tabs",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "start": "node scripts/launch.mjs",
+    "detach": "node scripts/detach.mjs",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "typecheck": "tsc",
+    "test": "node --test test/*.test.mjs",
+    "check": "npm run format:check && npm run typecheck && npm test && npm run build"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2",
+    "prettier": "3.9.10",
+    "typescript": "^7.0.2"
+  },
+  "description": "Virtual tabs for the official Spotify desktop app on macOS."
+}
