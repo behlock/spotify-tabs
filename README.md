@@ -1,7 +1,5 @@
 # Spotify Tabs
 
-Tabs for the Spotify desktop app on macOS
-
 ![Spotify Tabs showing multiple open pages](assets/spotify-tabs.png)
 
 ## Run
