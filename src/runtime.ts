@@ -19,8 +19,11 @@ export function mountTabs(router: Router, host: HTMLElement): TabRuntime {
 
   let titleBaseline = readPageTitle();
   let awaitingTitle = false;
+  let restoreTabFocus = false;
   let titleTimer: ReturnType<typeof setTimeout> | undefined;
-  const scroll = createScrollRestorer(host);
+  const scroll = createScrollRestorer(host, () => {
+    if (restoreTabFocus) bar.focusActive();
+  });
   const bar = createTabBar(host, {
     select: switchTab,
     close: closeTab,
@@ -55,6 +58,8 @@ export function mountTabs(router: Router, host: HTMLElement): TabRuntime {
     persist();
   }
   function beforeNavigation() {
+    restoreTabFocus =
+      document.activeElement instanceof HTMLElement && document.activeElement.matches('.st-select');
     titleBaseline = readPageTitle();
     awaitingTitle = true;
   }
@@ -106,14 +111,17 @@ export function mountTabs(router: Router, host: HTMLElement): TabRuntime {
     changed('tabs');
   }
   function keydown(event: KeyboardEvent) {
-    if (event.altKey || event.ctrlKey || event.shiftKey || event.isComposing) return;
+    if (event.key === 'Tab') restoreTabFocus = false;
+    if (event.altKey || event.ctrlKey || event.isComposing) return;
     if (!event.metaKey) {
+      if (event.shiftKey) return;
       if (
         event.target instanceof HTMLElement &&
         event.target.matches('.st-select') &&
         ['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)
       ) {
         event.preventDefault();
+        event.stopImmediatePropagation();
         const { tabs, activeTabId } = manager.state;
         const index = tabs.findIndex((tab) => tab.id === activeTabId);
         const next =
@@ -128,11 +136,13 @@ export function mountTabs(router: Router, host: HTMLElement): TabRuntime {
       return;
     }
     const key = event.key.toLowerCase();
-    if (key !== 't' && !/^[1-9]$/.test(key)) return;
+    const close = event.shiftKey && key === 'x';
+    if (!close && (event.shiftKey || (key !== 't' && !/^[1-9]$/.test(key)))) return;
     event.preventDefault();
     event.stopImmediatePropagation();
     if (event.repeat) return;
-    if (key === 't') addTab();
+    if (close) closeTab(manager.state.activeTabId);
+    else if (key === 't') addTab();
     else {
       const tab = manager.state.tabs[Number(key) - 1];
       if (tab) switchTab(tab.id);

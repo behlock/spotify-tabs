@@ -26,7 +26,8 @@ function fixture(t) {
   );
   for (const [key, value] of Object.entries(globals))
     Object.defineProperty(globalThis, key, { configurable: true, writable: true, value });
-  const restorer = createScrollRestorer(host);
+  let restored = 0;
+  const restorer = createScrollRestorer(host, () => restored++);
   t.after(() => {
     restorer.cancel();
     for (const [key, descriptor] of previous) {
@@ -36,6 +37,9 @@ function fixture(t) {
   });
   return {
     restorer,
+    get restored() {
+      return restored;
+    },
     viewport,
     host,
     show(id) {
@@ -54,7 +58,8 @@ function fixture(t) {
 }
 
 test('destination stays hidden until its content can hold the saved offset, then restores before reveal', (t) => {
-  const { restorer, viewport, host, show, frame } = fixture(t);
+  const context = fixture(t);
+  const { restorer, viewport, host, show, frame } = context;
   show('a');
   restorer.prepare();
   restorer.restore(route('b'), 900, false);
@@ -71,15 +76,18 @@ test('destination stays hidden until its content can hold the saved offset, then
   assert.equal(viewport.scrollTop, 900, 'mutation callback restores before the next paint');
   frame();
   assert.equal(host.dataset.stRestoring, 'true');
+  assert.equal(context.restored, 0);
   viewport.scrollTop = 0; // Spotify can reset scroll during its own layout work.
   frame();
   assert.equal(viewport.scrollTop, 900);
   assert.equal(host.dataset.stRestoring, undefined);
   assert.equal(restorer.pending, false);
+  assert.equal(context.restored, 1);
 });
 
 test('same-route tabs restore independently and interaction can cancel a pending restore', (t) => {
-  const { restorer, viewport, host, show, frame } = fixture(t);
+  const context = fixture(t);
+  const { restorer, viewport, host, show, frame } = context;
   show('a');
   restorer.prepare();
   restorer.restore(route('a'), 450, true);
@@ -95,6 +103,7 @@ test('same-route tabs restore independently and interaction can cancel a pending
   frame();
   assert.equal(viewport.scrollTop, 450);
   assert.equal(host.dataset.stRestoring, undefined);
+  assert.equal(context.restored, 1, 'cancellation must not reclaim keyboard focus');
 });
 
 test('a rapid second switch replaces the pending destination', (t) => {

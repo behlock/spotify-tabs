@@ -17,4 +17,5 @@ npm start
 - **+** beside the last tab or **⌘T**: new tab.
 - Click a tab or **⌘1–9**: switch tabs.
 - Drag tabs to reorder; **×** closes a tab.
+- **⌘⇧X**: close the active tab.
 - With a tab focused, use **←/→**, **Home** or **End** to switch.

@@ -1,7 +1,7 @@
 import type { Route } from './routes.ts';
 import { readPageTitle, titleBelongsToRoute } from './title.ts';
 
-export function createScrollRestorer(host: HTMLElement) {
+export function createScrollRestorer(host: HTMLElement, onRestored: () => void = () => {}) {
   let pending = false;
   let target: { route: Route; y: number; sameRoute: boolean } | null = null;
   let baseline = readPageTitle();
@@ -20,6 +20,11 @@ export function createScrollRestorer(host: HTMLElement) {
     frame = undefined;
     clearTimeout(timeout);
     delete host.dataset.stRestoring;
+  }
+
+  function finish() {
+    cancel();
+    onRestored();
   }
 
   function apply(): boolean {
@@ -47,7 +52,7 @@ export function createScrollRestorer(host: HTMLElement) {
       stableFrames = 0;
       return;
     }
-    if (++stableFrames >= 2) cancel();
+    if (++stableFrames >= 2) finish();
     else frame = requestAnimationFrame(settle);
   }
 
@@ -68,7 +73,7 @@ export function createScrollRestorer(host: HTMLElement) {
       timeout = setTimeout(() => {
         const element = viewport();
         if (element && target) element.scrollTop = target.y;
-        cancel();
+        finish();
       }, 6000);
     },
     restore(route: Route, y: number, sameRoute: boolean) {

@@ -57,7 +57,7 @@
   color: #fff;
 }
 #spotify-tabs button:focus-visible {
-  outline: 2px solid #1ed760;
+  outline: 5px auto #3673d4;
   outline-offset: -2px;
 }
 #spotify-tabs .st-select {

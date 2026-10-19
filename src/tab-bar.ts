@@ -156,7 +156,7 @@ export function createTabBar(host: HTMLElement, actions: Actions) {
         select.title = `${tab.title}\n${routeKey(tab.route)}${index < 9 ? ` (⌘${index + 1})` : ''}`;
         select.onclick = () => actions.select(tab.id);
         const close = button('st-close', '×', `Close ${tab.title}`);
-        close.title = 'Close tab';
+        close.title = selected ? 'Close tab (⌘⇧X)' : 'Close tab';
         close.onclick = () => actions.close(tab.id);
         item.append(select, close);
         fragment.append(item);
